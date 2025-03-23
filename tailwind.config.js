@@ -7,12 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        's7-green': '#95c11f',
-        's7-dark-green': '#7da019',
-        's7-light-yellow': '#fffbeb',
+        's7-green': '#8bc53f',
+        's7-dark-green': '#609100',
       },
       fontFamily: {
-        sans: ['Arial', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
     },
   },

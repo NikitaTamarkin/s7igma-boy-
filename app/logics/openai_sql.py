@@ -6,7 +6,6 @@ load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_sql_query_from_gpt(user_age: int, current_time: str, user_location: str, user_query: str) -> str:
-    
     prompt = f"""
     Ты – специалист по ETL процессам и SQL. Перед тобой запрос пользователя:
     "{user_query}"
@@ -52,3 +51,148 @@ def get_sql_query_from_gpt(user_age: int, current_time: str, user_location: str,
         output_text = "\n".join(output_text.splitlines()[1:-1]).strip()
     return output_text
 
+import openai
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def get_support_answer(user_query: str, retrieved_data: dict) -> str:
+    """
+    Функция принимает:
+    - user_query: вопрос пользователя
+    - retrieved_data: список словарей с полями "question_translit_anylyzer" и "answer_translit_anylyzer"
+    
+    Формирует промпт, включающий вопрос пользователя и информацию из базы знаний,
+    и возвращает ответ технической поддержки, сгенерированный OpenAI.
+    """
+    
+    prompt = f"""
+Ты специалист технической поддержки в компании S7. Пользователь задал тебе вопрос, и ты должен ответить, используя приведённые ниже данные из нашей базы знаний.
+
+Вопрос пользователя:
+"{user_query}"
+
+Мы ншли релевантные для вопроса пользователя документы и тебе исходя из них нужно ответить на вопрос пользователя:
+
+Название документа 1: {retrieved_data[0]['_source'].get("question_translit_anylyzer", "Нет вопроса")}
+Документ 1: {retrieved_data[0]['_source'].get("answer_translit_anylyzer", "Нет ответа")}
+
+Название документа 2: {retrieved_data[1]['_source'].get("question_translit_anylyzer", "Нет вопроса")}
+Документ 2: {retrieved_data[1]['_source'].get("answer_translit_anylyzer", "Нет ответа")}
+
+Название документа 3: {retrieved_data[2]['_source'].get("question_translit_anylyzer", "Нет вопроса")}
+Документ 3: {retrieved_data[2]['_source'].get("answer_translit_anylyzer", "Нет ответа")}
+
+Название документа 4: {retrieved_data[3]['_source'].get("question_translit_anylyzer", "Нет вопроса")}
+Документ 4: {retrieved_data[3]['_source'].get("answer_translit_anylyzer", "Нет ответа")}
+
+Название документа 5: {retrieved_data[4]['_source'].get("question_translit_anylyzer", "Нет вопроса")}
+Документ 5: {retrieved_data[4]['_source'].get("answer_translit_anylyzer", "Нет ответа")}
+
+На основе приведённой информации дай пользователю полный, точный и профессиональный ответ.
+Бери информацию из ответов 1-5 чтоб ответить на впорос пользователя. Думай шаг за шагом и несколько раз посмотри на все ответы, там всегда есть релевантная информация.
+"""
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Ты ассистент технической поддержки из S7, дающий точные и подробные ответы на вопросы пользователей."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.8,
+        max_tokens=500
+    )
+
+    answer = response.choices[0].message['content'].strip()
+    if answer.startswith("```"):
+        answer = "\n".join(answer.splitlines()[1:-1]).strip()
+    return answer
+
+def classify_support_question(user_query: str) -> dict:
+    """
+    Функция классифицирует вопрос пользователя на две категории:
+    1. Вопрос по задержанию рейса
+    2. Обычный вопрос
+    
+    Возвращает словарь с типом вопроса и дополнительной информацией.
+    """
+    prompt = f"""
+    Ты – специалист S7 по классификации запросов пользователей. 
+    Перед тобой запрос пользователя: "{user_query}"
+    
+    Твоя задача определить, относится ли вопрос к задержке рейса или это обычный вопрос.
+    
+    Примеры вопросов по задержке рейса:
+    - Мой рейс задержали, что мне делать?
+    - Как получить компенсацию за задержку рейса?
+    - Я не могу вылететь из-за задержки рейса
+    - Когда вылетит мой задержанный рейс?
+    - Куда обратиться по задержке рейса?
+    
+    Если вопрос связан с задержкой рейса, ответь "delay".
+    Если это обычный вопрос, ответь "regular".
+    
+    Дай ответ в формате одного слова: "delay" или "regular".
+    """
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Ты ассистент, классифицирующий вопросы."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.3,
+        max_tokens=50
+    )
+    
+    result = response.choices[0].message['content'].strip().lower()
+    question_type = "delay" if "delay" in result else "regular"
+    
+    return {
+        "type": question_type,
+        "query": user_query
+    }
+
+def format_delay_decision_response(decision: str, user_query: str, user_name: str) -> str:
+    """
+    Функция форматирует ответ на запрос о задержке рейса.
+    
+    Параметры:
+    - decision: решение из базы данных
+    - user_query: исходный запрос пользователя
+    - user_name: имя пользователя
+    
+    Возвращает отформатированный ответ от службы поддержки.
+    """
+    prompt = f"""
+    Ты – специалист службы поддержки авиакомпании S7. 
+    
+    Пассажир {user_name} спрашивает: "{user_query}"
+    
+    Информация из системы:
+    "{decision}"
+    
+    Сформулируй профессиональный, вежливый и подробный ответ пассажиру, включающий:
+    1. Обращение по имени
+    2. Понимание проблемы
+    3. Четкое объяснение принятого решения
+    4. Извинения за неудобства
+    5. Инструкции по дальнейшим действиям
+    6. Контактную информацию для дополнительных вопросов
+    
+    Отвечай от имени службы поддержки S7. Твоя задача сделать в ответе упор на Информация из системы, ты должен написать, что предлогаешь пользователю именно такой вариант решения, который прописан в Информация из системы.
+    """
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Ты специалист службы поддержки авиакомпании S7."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.7,
+        max_tokens=500
+    )
+    
+    return response.choices[0].message['content'].strip()
