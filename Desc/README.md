@@ -3,7 +3,7 @@
 >Продукт 1: ai-помощник в покупке билет
 
 <p align="center">
-   <img width="1600px" src="Умный поиск схема.png" alt="qr"/>
+   <img width="1600px" src="ДизайнПК.png" alt="qr"/>
 </p>
 
 ---
