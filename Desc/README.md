@@ -148,7 +148,7 @@
 **Цель:** поиск и бронирование билетов на основе запросов пользователя.
 
 <p align="center">
-   <img width="600px" src="design_PK.png" alt="qr"/>
+   <img width="1600px" src="design_PK.png" alt="qr"/>
 </p>
 
 ### Как взаимодействует пользователь:
@@ -164,7 +164,7 @@
 **Цель:** тот же функционал, что и на ПК, адаптированный для мобильных устройств.
 
 <p align="center">
-   <img width="600px" src="design_telephone.png" alt="qr"/>
+   <img width="200px" src="design_telephone.png" alt="qr"/>
 </p>
 
 ### Как взаимодействует пользователь:
@@ -209,18 +209,6 @@
 
 
 
-**Инструменты для оформления решения**
-> [!NOTE]
-> Для вставки диаграмм/экранных форм используйте HTML-тэг "img". Диграмму нужно загрузить файлом в папку Desc и прописать внутри тэга её название. Формат изображений .png, .img/
-> Пример вставки диаграммы
-><p align="center">
->   <img width="200px" src="img.png" alt="qr"/>
-></p>
-> Для создания и оформления таблиц используйте документацию - https://docs.github.com/ru/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables
->
-> Пример таблицы https://github.com/s7-ai-wings/template-artifact/blob/main/Idea/README.md
->
->  Другие возможности оформления md-страниц в Github - https://docs.github.com/ru/get-started
 
 
 
