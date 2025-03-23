@@ -2,3 +2,5 @@
 *.ipynb_checkpoints
 *.env
 *.ipynb
+app/logics/.env
+dtata.ipynb
