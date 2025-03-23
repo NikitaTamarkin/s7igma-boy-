@@ -1,1 +1,2 @@
-# test-hack-code
+# s7igma-boy-
+Решение хакатон 2025 S7
