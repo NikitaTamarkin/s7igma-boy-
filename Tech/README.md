@@ -34,5 +34,7 @@
   Файл: `opensearch.py`
 
 ### 6. Парсинг:
-- **Selenium**: Парсинг с помощью селениум с сайта https://helpcenter.s7.ru и добобработка для загрузки в **OpenSearch**.  
+- **Selenium**: Парсинг с помощью селениум с сайта https://helpcenter.s7.ru и добобработка для загрузки в **OpenSearch**.
+
+### ВСЕ СИНТЕТИЧЕСКИЕ ДАННЫЕ С РАСЧЕТАМИ ДЛЯ ПОЛЬЗОВАТЕЛЕЙ + ПАРСИНГ + ИНДЕКСИКАЦИЯ В OPENSEARCH ТУТ https://colab.research.google.com/drive/1DIiNqnqymR5i_vQTuFSkXeXZyjxgaVZJ?usp=sharing
 
